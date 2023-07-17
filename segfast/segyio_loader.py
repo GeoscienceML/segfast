@@ -76,6 +76,10 @@ class SegyioLoader:
         # 0 means undefined sample interval, so it is removed from the set
         union_sample_interval = {bin_sample_interval, trace_sample_interval} - {0}
 
+        # For non-standard case where one header is in seconds and the other in milliseconds
+        if max(union_sample_interval) == 1000 * min(union_sample_interval):
+            return min(union_sample_interval)
+
         if len(union_sample_interval) != 1:
             raise ValueError("Cannot infer sample interval from file headers: "
                              "either both `Interval` (bytes 3217-3218 in the binary header) "
